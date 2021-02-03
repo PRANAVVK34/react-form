@@ -1,22 +1,19 @@
 import React, {Component} from 'react';
 import '../styles/form.css';
-import nameVdo from '../videos/name.mp4';
-import emailVdo from '../videos/email.mp4';
-import welcome from '../videos/welcome.mp4';
-import validEmail from '../videos/valid-email.mp4';
-import image from '../videos/image.jpg';
+import vdo from '../videos/vdo.mov';
 
 class Form extends Component{
     state={
             name:"",
             email:"",
             description:"",
-            video:[nameVdo,emailVdo,welcome,validEmail],
-            focus:false,        
+            video:vdo,
+            focus:false, 
+            loadData:false     
     }
     
+
     eventChangeHandler=(event)=>{
-        
         this.setState({
             [event.target.name]:event.target.value
             
@@ -41,37 +38,72 @@ class Form extends Component{
         }
         
     }
-    
 
  render(){
+    let sname=this.state.name
+    let semail=this.state.email
+    let mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 
      let addVideo;
-        addVideo=this.state.video[2]
-        
+ 
+        addVideo=this.state.video
+         
 
-     let sname=this.state.name
-     let semail=this.state.email
-     let mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    
-    
     if(sname.length===""||sname.length<=3){
             if(this.state.focus){
-         addVideo=this.state.video[0]
+                if (this.video !== null) {
+                    this.video.currentTime = 5
+                  
+                    addVideo=this.state.video
+                   
+                    this.video.addEventListener("timeupdate", function(){
+                        if(this.currentTime >= 10) {
+                        //    this.style.display="none"
+                            this.pause()
+                           
+                        }
+                    });
+                    
+                }
+         
          
             }
     
       
      }
      else if(semail.length===""||semail.length<6||!semail.match(mailformat)){
-          
-        addVideo=this.state.video[1]
+        if (this.video !== null) {
+            this.video.currentTime = 10;
+           
+            addVideo=this.state.video
+            
+            this.video.addEventListener("timeupdate",function() {
+                if(this.currentTime>=15){
+                    this.pause();
+                    //disable
+                }
+            })
+        }
+       
             
        
-}else{
-    addVideo=this.state.video[3]
-}
+}else if (this.video !== null) {
+        this.video.currentTime = 15;
+      
+        addVideo=this.state.video
+        this.video.addEventListener("timeupdate",function() {
+            if(this.currentTime>=15){
+                this.pause();
+                //disable
+            }
+        })
+       
+    }
+   
 
-     
+
+
      return(
         <>
         <div className="forms">
@@ -102,23 +134,23 @@ class Form extends Component{
            placeholder="Enter Description"
            value={this.state.description}
            onChange={this.eventChangeHandler}></input>
-           
-           <button type="submit" id="button" >Send</button>
+           <button>SEND</button>
+          
            </form>
         
        </div>
+      
        <div className="vdo">
-            <img src={image} alt=""></img>
-         <video autoPlay 
-         muted 
-         playsInline 
-         key={addVideo}>
-        
-        <source src={addVideo}/>
-             
-         </video>
+        <video autoPlay 
+        muted ref={function(ref) { this.video = ref }.bind(this)}
+        playsInline controls
+        key={addVideo}>
 
-     </div>
+        <source src={addVideo}/>
+
+        </video>
+
+        </div>
         
     </>
      )
@@ -126,5 +158,4 @@ class Form extends Component{
 } 
 
 export default Form;
-
 
